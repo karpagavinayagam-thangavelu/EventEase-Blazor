@@ -1,0 +1,65 @@
+@page "/manage"
+@using EventEase.Models
+@using EventEase.Components
+@inject EventEase.Services.EventService EventService
+
+<PageTitle>EventEase - Manage Events</PageTitle>
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>Manage Events</h1>
+        
+        <div class="mb-3">
+            <button class="btn btn-success" @onclick="AddNewEvent">Add New Event</button>
+        </div>
+        
+        @foreach (var eventItem in events)
+        {
+            <EventCard Event="@eventItem" IsEditable="true" />
+            <div class="mb-3">
+                <button class="btn btn-primary" @onclick="() => SaveEvent(eventItem)">Save Changes</button>
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Management Tools</h5>
+            </div>
+            <div class="card-body">
+                <p>Use this page to create and edit events.</p>
+                <p><strong>Events:</strong> @events.Count</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Event> events = new();
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+    }
+
+    private void AddNewEvent()
+    {
+        var newEvent = new Event
+        {
+            Title = "New Event",
+            Description = "Event description",
+            Date = DateTime.Now.AddDays(7),
+            Location = "TBD"
+        };
+        EventService.AddEvent(newEvent);
+        events = EventService.GetEvents();
+        StateHasChanged();
+    }
+
+    private void SaveEvent(Event eventItem)
+    {
+        EventService.UpdateEvent(eventItem);
+        StateHasChanged();
+    }
+}

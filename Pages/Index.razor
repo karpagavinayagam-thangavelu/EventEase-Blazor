@@ -1,0 +1,75 @@
+@page "/"
+@using EventEase.Models
+@using EventEase.Components
+@inject EventEase.Services.EventService EventService
+@inject EventEase.Services.UserSessionService UserSession
+
+<PageTitle>EventEase - Events</PageTitle>
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>Upcoming Events</h1>
+        
+        @if (events.Any())
+        {
+            @foreach (var eventItem in events)
+            {
+                <EventCard Event="@eventItem" OnRegister="@HandleRegistration" />
+            }
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <h4>No Events Available</h4>
+                <p>Check back later for upcoming events!</p>
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-4">
+        @if (!UserSession.IsLoggedIn)
+        {
+            <div class="alert alert-warning">
+                <h5>Login Required</h5>
+                <p>Please <a href="/register">register</a> to sign up for events.</p>
+            </div>
+        }
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Events:</strong> @events.Count</p>
+                <p><strong>Total Registrations:</strong> @events.Sum(e => e.RegisteredUsers.Count)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Event> events = new();
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+        UserSession.OnUserChanged += StateHasChanged;
+    }
+
+    private void HandleRegistration(Event eventItem)
+    {
+        if (UserSession.IsLoggedIn)
+        {
+            var success = EventService.RegisterUser(eventItem.Id, UserSession.CurrentUser!);
+            if (success)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        UserSession.OnUserChanged -= StateHasChanged;
+    }
+}

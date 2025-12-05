@@ -1,0 +1,65 @@
+@using EventEase.Models
+@inject EventEase.Services.EventService EventService
+
+<div class="card">
+    <div class="card-header">
+        <h4>Attendance Tracker</h4>
+    </div>
+    <div class="card-body">
+        @if (events.Any())
+        {
+            @foreach (var eventItem in events)
+            {
+                <div class="mb-3 p-3 border rounded">
+                    <h5>@eventItem.Title</h5>
+                    <p class="text-muted">@eventItem.Date.ToString("MMM dd, yyyy")</p>
+                    
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: @(GetAttendancePercentage(eventItem))%" 
+                             aria-valuenow="@eventItem.RegisteredUsers.Count" 
+                             aria-valuemin="0" 
+                             aria-valuemax="@eventItem.MaxAttendees">
+                            @eventItem.RegisteredUsers.Count/@eventItem.MaxAttendees
+                        </div>
+                    </div>
+                    
+                    @if (eventItem.RegisteredUsers.Any())
+                    {
+                        <details>
+                            <summary class="btn btn-outline-info btn-sm">View Attendees (@eventItem.RegisteredUsers.Count)</summary>
+                            <ul class="list-group mt-2">
+                                @foreach (var attendee in eventItem.RegisteredUsers)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        @attendee
+                                        <span class="badge bg-success rounded-pill">Registered</span>
+                                    </li>
+                                }
+                            </ul>
+                        </details>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No events available.</p>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Event> events = new();
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+    }
+
+    private double GetAttendancePercentage(Event eventItem)
+    {
+        if (eventItem.MaxAttendees == 0) return 0;
+        return (double)eventItem.RegisteredUsers.Count / eventItem.MaxAttendees * 100;
+    }
+}

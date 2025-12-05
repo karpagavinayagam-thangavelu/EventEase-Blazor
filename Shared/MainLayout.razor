@@ -1,0 +1,48 @@
+@inherits LayoutView
+@inject EventEase.Services.UserSessionService UserSession
+
+<div class="page">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">EventEase</a>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" href="/">Events</a>
+                <a class="nav-link" href="/register">Register</a>
+                <a class="nav-link" href="/attendance">Attendance</a>
+                <a class="nav-link" href="/manage">Manage</a>
+            </div>
+            <div class="navbar-nav">
+                @if (UserSession.IsLoggedIn)
+                {
+                    <span class="navbar-text me-3">Welcome, @UserSession.CurrentUser!</span>
+                    <button class="btn btn-outline-light btn-sm" @onclick="Logout">Logout</button>
+                }
+                else
+                {
+                    <span class="navbar-text">Not logged in</span>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        @Body
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        UserSession.OnUserChanged += StateHasChanged;
+    }
+
+    private void Logout()
+    {
+        UserSession.Logout();
+    }
+
+    public void Dispose()
+    {
+        UserSession.OnUserChanged -= StateHasChanged;
+    }
+}

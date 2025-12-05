@@ -1,0 +1,68 @@
+@using System.ComponentModel.DataAnnotations
+@inject EventEase.Services.UserSessionService UserSession
+
+<div class="card">
+    <div class="card-header">
+        <h4>User Registration</h4>
+    </div>
+    <div class="card-body">
+        <EditForm Model="@registrationModel" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label class="form-label">Full Name:</label>
+                <InputText @bind-Value="registrationModel.FullName" class="form-control" />
+                <ValidationMessage For="@(() => registrationModel.FullName)" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email:</label>
+                <InputText @bind-Value="registrationModel.Email" class="form-control" />
+                <ValidationMessage For="@(() => registrationModel.Email)" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Phone:</label>
+                <InputText @bind-Value="registrationModel.Phone" class="form-control" />
+                <ValidationMessage For="@(() => registrationModel.Phone)" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn btn-success" disabled="@isSubmitting">
+                @(isSubmitting ? "Registering..." : "Register")
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private RegistrationModel registrationModel = new();
+    private bool isSubmitting = false;
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        await Task.Delay(1000); // Simulate API call
+        
+        UserSession.Login(registrationModel.FullName);
+        registrationModel = new(); // Reset form
+        isSubmitting = false;
+        
+        StateHasChanged();
+    }
+
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "Full name is required")]
+        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Invalid phone number format")]
+        public string Phone { get; set; } = string.Empty;
+    }
+}
