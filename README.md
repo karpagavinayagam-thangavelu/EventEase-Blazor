@@ -82,7 +82,7 @@ EventEase/
 git init
 git add .
 git commit -m "Initial commit - EventEase Blazor application"
-git remote add origin https://github.com/YOUR_USERNAME/EventEase-Blazor.git
+git remote add origin https://github.com/karpagavinayagam/EventEase-Blazor.git
 git branch -M main
 git push -u origin main
 ```
