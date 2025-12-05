@@ -75,6 +75,47 @@ EventEase/
 4. **Track Attendance**: View attendance statistics on the Attendance page
 5. **Manage Events**: Create and edit events on the Manage page
 
+## Git Setup and Deployment
+
+### Initial Git Setup
+```bash
+git init
+git add .
+git commit -m "Initial commit - EventEase Blazor application"
+git remote add origin https://github.com/YOUR_USERNAME/EventEase-Blazor.git
+git branch -M main
+git push -u origin main
+```
+
+### Build Commands
+```bash
+# Restore dependencies
+dotnet restore
+
+# Build project
+dotnet build
+
+# Run locally
+dotnet run
+
+# Publish for production
+dotnet publish -c Release -o ./publish
+```
+
+### Docker Deployment
+```bash
+# Build Docker image
+docker build -t eventeaseapp .
+
+# Run container
+docker run -p 8080:80 eventeaseapp
+```
+
+### GitHub Actions
+- Automated CI/CD pipeline in `.github/workflows/deploy.yml`
+- Builds and tests on every push to main branch
+- Creates deployment artifacts
+
 ## Technologies Used
 
 - **Blazor Server**: For interactive web UI
@@ -82,3 +123,5 @@ EventEase/
 - **Entity Framework**: For data management (simulated with in-memory collections)
 - **DataAnnotations**: For form validation
 - **Dependency Injection**: For service management
+- **GitHub Actions**: For CI/CD pipeline
+- **Docker**: For containerized deployment
