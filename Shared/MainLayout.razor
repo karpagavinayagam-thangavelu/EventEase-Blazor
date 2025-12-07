@@ -1,5 +1,6 @@
-@inherits LayoutView
+@inherits LayoutComponentBase
 @inject EventEase.Services.UserSessionService UserSession
+@implements IDisposable
 
 <div class="page">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -34,6 +35,7 @@
     protected override void OnInitialized()
     {
         UserSession.OnUserChanged += StateHasChanged;
+        base.OnInitialized();
     }
 
     private void Logout()
